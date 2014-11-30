@@ -20,9 +20,6 @@ module.exports = {
             minLength: 8,
             regex: /\d/
         },
-        passwordConfirmation: {
-            type: 'string'
-        },
         email: {
             type: 'string',
             email: true,
