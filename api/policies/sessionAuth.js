@@ -12,36 +12,35 @@ module.exports = function(req, res, next) {
     // TODO - turn this into a generic service
     function deleteAuthTokenParams() {
         delete req.query.authToken
-        delete req.query.authTokenTime
-        delete req.query.authTokenHash
-
         delete req.params.authToken
-        delete req.params.authTokenTime
-        delete req.params.authTokenHash
-
         delete req.body.authToken
-        delete req.body.authTokenTime
-        delete req.body.authTokenHash
     }
 
     // User is allowed, proceed to the next policy, 
     // or if this is the last policy, the controller
-
     var params = req.allParams();
-    if (!params.authToken || !params.authTokenTime || !params.authTokenHash) {
+    if (!params.authToken) {
         // User is not allowed
         // (default res.forbidden() behavior can be overridden in `config/403.js`)
         return res.forbidden('You are not permitted to perform this action.');
     }
 
-    AuthToken.findOne(params.authToken).then(function(token) {
-        return [token, token.verifyTokenHash(params.authTokenTime, params.authTokenHash)];
-    }).spread(function(token, isValid) {
-        if (!isValid) {
-            throw new Error('Invalid token');
+    AuthToken.findOne({
+        tokenData: params.authToken
+    }).then(function(token) {
+        // Ensure the token hasn't expired
+        var timeDiff = token.expiresAt - (new Date());
+        if (timeDiff <= 0) {
+            return res.forbidden('Invalid token.');
         }
+
+        // remove the token info from the request
         deleteAuthTokenParams();
+
+        // add the token model to the response locals so we can access it later
+        //   for looking up the authenticated user of the request...
         res.locals.authToken = token;
+
         next();
     }).catch(function(e) {
         return res.forbidden('Invalid token.');

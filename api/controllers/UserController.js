@@ -15,7 +15,7 @@ module.exports = {
         var identifier = params.email || params.username;
 
         User.login(identifier, params.password).then(function(authToken) {
-            return res.jsonx(authToken);
+            return res.created(authToken);
         }).catch(function(e) {
             return res.badRequest('Username or password is incorrect');
         });

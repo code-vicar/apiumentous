@@ -1,6 +1,9 @@
 'use strict';
-var Promise = require('bluebird');
-var bcrypt = Promise.promisifyAll(require('bcrypt'));
+/* global User */
+/* global AuthToken */
+
+var BlueBirdPromise = require('bluebird');
+var bcrypt = BlueBirdPromise.promisifyAll(require('bcrypt'));
 
 /**
  * User.js
@@ -53,7 +56,7 @@ module.exports = {
         });
     },
 
-    login: function(identifier, password) {
+    login: function login(identifier, password) {
         return User.validateCredentials(identifier, password).spread(function(user, isValid) {
             if (!isValid) {
                 throw new Error('Incorrect Password');
@@ -65,13 +68,13 @@ module.exports = {
         });
     },
 
-    logout: function(user) {
+    logout: function logout(user) {
         return AuthToken.destroy({
             owner: user
         });
     },
 
-    beforeCreate: function(values, cb) {
+    beforeCreate: function beforeCreate(values, cb) {
 
         // ensure the password matches confirmation
         if (values.password !== values.passwordConfirmation) {

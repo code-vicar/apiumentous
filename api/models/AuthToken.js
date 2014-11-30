@@ -11,12 +11,12 @@ var moment = require('moment');
 module.exports = {
 
     attributes: {
-        privateKey: {
+        tokenData: {
             type: 'string',
             required: true
         },
         expiresAt: {
-            type: 'date',
+            type: 'datetime',
             required: true
         },
         owner: {
@@ -25,7 +25,7 @@ module.exports = {
     },
 
     beforeCreate: function authTokenBeforeCreate(values, cb) {
-        values.privateKey = uuid.v4();
+        values.tokenData = uuid.v4();
         values.expiresAt = moment().add(30, 'minutes');
     }
 };
