@@ -19,7 +19,7 @@ module.exports = {
             type: 'string',
             required: true,
             unique: true,
-            regex: /^[a-z0-9_-]{3,15}$/
+            regex: /^[A-Za-z0-9_-]{3,15}$/
         },
         password: {
             type: 'string',
@@ -50,9 +50,7 @@ module.exports = {
                 email: identifier
             }]
         }).then(function(user) {
-            return [user, bcrypt.hash(password, 10)];
-        }).spread(function(user, hash) {
-            return [user, user.password === hash];
+            return [user, bcrypt.compareAsync(password, user.password)];
         });
     },
 
