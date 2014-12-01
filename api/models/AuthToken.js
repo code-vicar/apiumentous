@@ -12,12 +12,10 @@ module.exports = {
 
     attributes: {
         tokenData: {
-            type: 'string',
-            required: true
+            type: 'string'
         },
         expiresAt: {
-            type: 'datetime',
-            required: true
+            type: 'datetime'
         },
         owner: {
             model: 'user'
@@ -26,6 +24,7 @@ module.exports = {
 
     beforeCreate: function authTokenBeforeCreate(values, cb) {
         values.tokenData = uuid.v4();
-        values.expiresAt = moment().add(30, 'minutes');
+        values.expiresAt = moment().add(30, 'minutes').toDate();
+        cb();
     }
 };
